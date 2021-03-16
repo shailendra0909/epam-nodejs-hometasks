@@ -1,0 +1,23 @@
+{
+  "name": "epam-nodejs-hometasks",
+  "version": "1.0.0",
+  "description": "This is for the home task provided in EPAM NODEJS programm",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shailendra0909/epam-nodejs-hometasks.git"
+  },
+  "author": "shailendra pratap singh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shailendra0909/epam-nodejs-hometasks/issues"
+  },
+  "homepage": "https://github.com/shailendra0909/epam-nodejs-hometasks#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
