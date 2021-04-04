@@ -1,31 +1,65 @@
 const expess = require('express');
+const validator = require('express-joi-validation').createValidator({})
 
+const ErrorCodes = require('./CustomError/ResponseCodes');
+const { userSchema, userIdSchema, userPutSchema } = require('./UserSchema');
 
 const userService = require('./UserService');
-
 const userRouter = expess.Router();
 
-userRouter.get('/:id', async (req, res) => {
+userRouter.get('/', (req, res) => {
     const userId = req.params.id;
-    const user = await userService.getUser(userId)
-    res.send(user);
+    userService.getAllUser().then((users) => {
+        res.json(users);
+    }).catch((err) => {
+        res.respond.notFoundError(err.message);
+    });
 });
 
-userRouter.post('/', async (req, res) => {
-    const user = await userService.addUser(req.body);
-    res.send(user);
+userRouter.get('/:id', validator.params(userIdSchema), (req, res) => {
+    const userId = req.params.id;
+    userService.getUser(userId).then((user) => {
+        res.json(user);
+    }).catch((err) => {
+        res.respond.notFoundError(err.message);
+    });
 });
 
-userRouter.put('/:id', async (req, res) => {
+userRouter.post('/', validator.body(userSchema), (req, res) => {
+    userService.addUser(req.body).then((user) => {
+        res.send(user);
+    }).catch((err) => {
+        res.respond.badRequest(err.message);
+    });
+});
+
+userRouter.put('/:id', validator.params(userIdSchema), validator.body(userPutSchema), (req, res) => {
     const id = req.params.id;
-    const user = await userService.updateUser(id, res.body);
-    res.send(user);
+    userService.updateUser(id, req.body).then((user) => {
+        res.send(user);
+    }).catch((err) => {
+        res.respond.badRequest(err.message);
+    });
+
 });
 
-userRouter.delete('/:id', async (req, res) => {
+userRouter.delete('/:id', validator.params(userIdSchema), (req, res) => {
     const id = req.params.id;
-    const user = userService.deleteUser(id);
-    res.send(user);
+    userService.deleteUser(id).then((user) => {
+        res.send(user);
+    }).catch((err) => {
+        res.respond.badRequest(err.message);
+    });
+
+});
+
+userRouter.get('/:loginSubstring/:limit', (req, res) => {
+    const { loginSubstring, limit } = req.params;
+    userService.getAutoSuggestUsers(loginSubstring, limit).then((users) => {
+        res.json(users);
+    }).catch((err) => {
+        res.respond.notFoundError(err.message);
+    });
 });
 
 module.exports = userRouter;

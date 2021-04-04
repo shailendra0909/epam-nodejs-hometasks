@@ -2,10 +2,10 @@
   "name": "epam-nodejs-hometasks",
   "version": "1.0.0",
   "description": "This is for the home task provided in EPAM NODEJS programm",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ./homeTask2/app.js"
+    "start": "nodemon ./hometask2/app.js"
   },
   "repository": {
     "type": "git",
@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "express": "^4.17.1",
+    "express-joi-validation": "^5.0.0",
     "joi": "^17.4.0",
     "uuid": "^8.3.2"
   }

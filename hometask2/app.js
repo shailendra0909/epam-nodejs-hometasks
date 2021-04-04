@@ -1,17 +1,39 @@
 const express = require('express');
-var bodyParser = require('body-parser');
 
 const userRouter = require('./UserRoute');
+const ErrorCodes = require('./CustomError/ResponseCodes');
+const { CustomHttpError } = require('./CustomError/HttpError');
+const attachResponder = require('./CustomError/CustomErrorResponder');
 
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(attachResponder);
 
 const PORT = process.env.PORT || 3000;
+//custom middleware
 
-app.use('/user', userRouter);
+
+//user route handler
+app.use('/users', userRouter);
+
+
+//default route handler
+app.all('*', (req, res) => {
+    throw new Error('No route available')
+})
+
+//error handlers
+app.use((err, req, res, next) => {
+    if (err instanceof CustomHttpError) {
+        res.status(err.statusCode).json({ error: err.message, ...err.data }).end();
+    } else {
+        res.status(ErrorCodes.INTERNAL_SERVER_ERROR).json({ error: err.message, ...err.data }).end();
+    }
+
+});
 
 app.listen(PORT, () => {
     console.log(`server started on http:localhost/${PORT}`);
