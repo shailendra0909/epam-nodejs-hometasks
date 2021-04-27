@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const { Op } = require("sequelize");
+const { omit } = require('lodash');
 const User = require('./dbConnection/UserModel');
 
 const REJECTED_KEYS = ['isDeleted', 'createdAt', 'password', 'updatedAt'];
@@ -19,7 +20,6 @@ const getUser = async (userId) => {
             }
         }
     });
-
     if (!users.length || users[0].isDeleted === true) {
         throw new Error(`User not found with given id: ${id}`)
     }
@@ -27,7 +27,6 @@ const getUser = async (userId) => {
 }
 
 const addUser = async (user) => {
-
     const newUser = await User.create({
         id: uuidv4(),
         isDeleted: false,
@@ -81,17 +80,13 @@ const getAutoSuggestUsers = async (loginSubstring, limit) => {
 
     });
 
-    const mappedUsers = users.map((user)=> processUser(user));
+    const mappedUsers = users.map((user) => processUser(user));
     return mappedUsers;
 }
 //remove unwanted attributes
 const processUser = (user) => {
     const newUser = { ...user };
-    delete newUser.isDeleted;
-    delete newUser.createdAt;
-    delete newUser.password;
-    delete newUser.updatedAt;
-    return newUser;
+    return omit(newUser, REJECTED_KEYS);
 }
 
 module.exports = {
