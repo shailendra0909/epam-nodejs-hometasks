@@ -53,4 +53,16 @@ groupRoute.delete('/:id', validator.params(groupIdSchema), async (req, res) => {
     });
 })
 
+//add users to the group
+groupRoute.post('/', async (req, res) => {
+    const groupId = req.body.groupId;
+    const userIds = req.body.userIds;
+    Group.addUsersToGroup(groupId, userIds).then((result) => {
+        res.send(result);
+    }).catch((err) => {
+        res.respond.notFoundError(err.message);
+    })
+});
+
+
 module.exports = groupRoute;

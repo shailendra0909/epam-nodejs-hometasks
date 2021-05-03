@@ -1,7 +1,7 @@
 const { v4: uuidv4 } = require('uuid');
 const { Op } = require("sequelize");
 const { omit } = require('lodash');
-const {User} = require('../dbConnection/models/index');
+const { User } = require('../dbConnection/models/index');
 
 const REJECTED_KEYS = ['isDeleted', 'createdAt', 'password', 'updatedAt'];
 
@@ -52,16 +52,19 @@ const updateUser = async (userId, newUser) => {
 
 const deleteUser = async (userId) => {
     try {
-        const usr = await getUser(userId);
-        const updatedUser = await User.update({ isDeleted: true }, {
-            where: {
-                id: userId
+        await sequelize.transaction(async (t) => {
+            const usr = await getUser(userId, { transaction: t });
+            const updatedUser = await User.update({ isDeleted: true }, {
+                where: {
+                    id: userId
+                }
+            }, { transaction: t });
+            if (!updatedUser) {
+                throw new Error(`User not found with given id: ${userId}`)
             }
+            sequelize.query('delete * from User_Group where id=${userId}', { transaction: t });
+            return processUser(usr);
         });
-        if (!updatedUser) {
-            throw new Error(`User not found with given id: ${userId}`)
-        }
-        return processUser(usr);
     }
     catch (error) {
         console.log('error in deleting the user!!')
