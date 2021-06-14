@@ -9,7 +9,11 @@ const User = sequelize.define("users", {
         unique: true,
         primaryKey: true
     },
-    login: DataTypes.STRING,
+    login: {
+        type: DataTypes.STRING,
+        unique: true,
+        primaryKey: true
+    },
     password: DataTypes.STRING,
     isDeleted: {
         type: DataTypes.BOOLEAN,

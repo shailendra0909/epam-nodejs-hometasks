@@ -1,0 +1,13 @@
+// I know that it should not be here. it is just to remember the commands
+
+mkdir ${HOME}/postgres-data/
+docker run -d --name dev-postgres -e POSTGRES_PASSWORD=Pass2020! -v ${HOME}/postgres-data/:/var/lib/postgresql/data -p 5432:5432 postgres
+docker exec -it dev-postgres bash
+
+docker pull dpage/pgadmin4
+docker run -p 80:80 -e 'PGADMIN_DEFAULT_EMAIL=shailendra.cs09@gmail.com' -e 'PGADMIN_DEFAULT_PASSWORD=SPSingh' --name dev-pgadmin -d dpage/pgadmin4
+
+docker inspect dev-postgres -f "{{json .NetworkSettings.Networks }}"
+ copy IP address
+
+http://localhost:80 and provide admin email and password from dpage/pgadmin4 container configuration 

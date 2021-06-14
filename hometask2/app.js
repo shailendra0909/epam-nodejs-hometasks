@@ -12,6 +12,9 @@ const sequelize = require('./dbConnection/db');
 const responseTimeCalc = require('./responseTimeCalc');
 const logger = require('./loggers/winstonLogger');
 
+const passport = require('./authentication/passportConfig');
+const { generateAccessToken, authenticationMiddleware } = require('./authentication/jwtConfig');
+
 const app = express();
 
 app.use(express.json());
@@ -27,14 +30,32 @@ const PORT = process.env.PORT || 3000;
 app.use(responseTimeCalc);
 
 //user route handler
-app.use('/users', userRouter);
-app.use('/groups', groupRoute);
+app.use(passport.initialize());
+app.use('/users', authenticationMiddleware, userRouter);
+app.use('/groups', authenticationMiddleware, groupRoute);
 
+//authentication
+app.post('/login', (req, res, next) => {
+    passport.authenticate('local', { session: false }, (err, user) => {
+        if (err) {
+            return res.status(400).json({ error: err })
+        }
+        if (!user) {
+            return res.status(400).json({ error: err });
+        }
+        console.log(user)
+        const token = generateAccessToken(user.dataValues.login);
+        res.json(token);
+
+    })(req, res, next);
+});
 
 //default route handler
 app.all('*', (_req, _res) => {
     throw new Error('No route available');
 });
+
+
 
 //custon error handlers
 app.use((err, _req, res, _next) => {

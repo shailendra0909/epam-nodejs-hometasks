@@ -26,6 +26,22 @@ const getUser = async (userId) => {
     return processUser(users[0]);
 }
 
+const getUserWithCredentials = async (loginName) => {
+    const users = await User.findAll({
+        where: {
+            login: {
+                [Op.eq]: loginName
+            }
+        }
+    });
+    if (users && !users.length) {
+        throw new Error(`User not found with given id: ${loginName}`)
+    }
+    return users[0];
+}
+
+
+
 const addUser = async (user) => {
     const newUser = await User.create({
         id: uuidv4(),
@@ -73,7 +89,7 @@ const deleteUser = async (userId) => {
 }
 
 const getAutoSuggestUsers = async (loginSubstring, limit) => {
-    const users = await User.findAll().then((users) => {
+    const users = await User.findAll({ plain: true }).then((users) => {
         return users.filter((user) => {
             if (user.login.includes(loginSubstring) && !user.isDeleted) {
                 return true;
@@ -98,5 +114,6 @@ module.exports = {
     deleteUser,
     updateUser,
     getAllUser,
-    getAutoSuggestUsers
+    getAutoSuggestUsers,
+    getUserWithCredentials
 }
