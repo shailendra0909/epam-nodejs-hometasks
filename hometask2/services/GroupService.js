@@ -75,3 +75,12 @@ const addUsersToGroup = async (groupId, userIds) => {
         throw new Error(`Could not assing group ${groupId} to the users ${userIds}`);
     }
 }
+
+module.exports = {
+    getGroups,
+    getGroup,
+    createGroup,
+    deleteGroup,
+    updateGroup,
+    addUsersToGroup
+}
