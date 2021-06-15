@@ -2,11 +2,12 @@ const expess = require('express');
 const validator = require('express-joi-validation').createValidator({})
 
 const { userSchema, userIdSchema, userPutSchema } = require('./dbConnection/UserSchema');
+const {authenticationMiddleware}  = require('./authentication/jwtConfig');
 
 const userService = require('./services/UserService');
 const userRouter = expess.Router();
 
-userRouter.get('/', (_req, res) => {
+userRouter.get('/', authenticationMiddleware, (_req, res) => {
     userService.getAllUser().then((users) => {
         res.json(users);
     }).catch((err) => {
@@ -14,7 +15,7 @@ userRouter.get('/', (_req, res) => {
     });
 });
 
-userRouter.get('/:id', validator.params(userIdSchema), (req, res) => {
+userRouter.get('/:id', validator.params(userIdSchema), authenticationMiddleware, (req, res) => {
     const userId = req.params.id;
     userService.getUser(userId).then((user) => {
         res.json(user);
@@ -31,7 +32,7 @@ userRouter.post('/', validator.body(userSchema), (req, res) => {
     });
 });
 
-userRouter.put('/:id', validator.params(userIdSchema), validator.body(userPutSchema), (req, res) => {
+userRouter.put('/:id', validator.params(userIdSchema), validator.body(userPutSchema), authenticationMiddleware, (req, res) => {
     const id = req.params.id;
     userService.updateUser(id, req.body).then((user) => {
         res.send(user);
@@ -41,7 +42,7 @@ userRouter.put('/:id', validator.params(userIdSchema), validator.body(userPutSch
 
 });
 
-userRouter.delete('/:id', validator.params(userIdSchema), (req, res) => {
+userRouter.delete('/:id', validator.params(userIdSchema), authenticationMiddleware, (req, res) => {
     const id = req.params.id;
     userService.deleteUser(id).then((user) => {
         res.send(user);
@@ -51,7 +52,7 @@ userRouter.delete('/:id', validator.params(userIdSchema), (req, res) => {
 
 });
 
-userRouter.get('/:loginSubstring/:limit', (req, res) => {
+userRouter.get('/:loginSubstring/:limit', authenticationMiddleware, (req, res) => {
     const { loginSubstring, limit } = req.params;
     userService.getAutoSuggestUsers(loginSubstring, limit).then((users) => {
         res.json(users);

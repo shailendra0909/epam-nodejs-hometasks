@@ -31,7 +31,7 @@ app.use(responseTimeCalc);
 
 //user route handler
 app.use(passport.initialize());
-app.use('/users', authenticationMiddleware, userRouter);
+app.use('/users', userRouter);
 app.use('/groups', authenticationMiddleware, groupRoute);
 
 //authentication
@@ -43,7 +43,6 @@ app.post('/login', (req, res, next) => {
         if (!user) {
             return res.status(400).json({ error: err });
         }
-        console.log(user)
         const token = generateAccessToken(user.dataValues.login);
         res.json(token);
 
