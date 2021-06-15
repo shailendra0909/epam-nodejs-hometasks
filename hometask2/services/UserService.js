@@ -21,7 +21,7 @@ const getUser = async (userId) => {
         }
     });
     if (!users.length || users[0].isDeleted === true) {
-        throw new Error(`User not found with given id: ${id}`)
+        throw new Error(`User not found with given id: ${userId}`)
     }
     return processUser(users[0]);
 }
