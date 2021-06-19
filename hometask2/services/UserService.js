@@ -1,9 +1,10 @@
 const { v4: uuidv4 } = require('uuid');
-const { Op } = require("sequelize");
+const sequelize = require("sequelize");
 const { omit } = require('lodash');
 const { User } = require('../dbConnection/models/index');
 
 const REJECTED_KEYS = ['isDeleted', 'createdAt', 'password', 'updatedAt'];
+const {Op} = sequelize;
 
 const getAllUser = async () => {
     const users = await User.findAll();
